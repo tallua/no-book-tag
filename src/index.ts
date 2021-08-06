@@ -1,9 +1,10 @@
 import axios from 'axios';
 import * as cheerio from 'cheerio';
 import * as qs from 'qs';
+import { mrcToObject } from 'himarc';
 
-export function query_book_name(name: string): Promise<string[]> {
-  return axios.get('https://www.nl.go.kr/NL/contents/search.do', {
+export async function query_book_name(name: string): Promise<string[]> {
+  return await axios.get('https://www.nl.go.kr/NL/contents/search.do', {
     params: {
       pageNum: 1, pageSize: 30, srchTarget: 'total', kwd: name + '#'
     }
@@ -24,8 +25,13 @@ export function query_book_name(name: string): Promise<string[]> {
 }
 
 
-export async function download_marc(book_id: string) {
+export async function download_marc(book_id: string): Promise<string> {
   return await axios.get('https://www.nl.go.kr/NL/marcDownload.do', {
     params: { downData: book_id }
   }).then((data) => data.data);
+}
+
+
+export function parse_marc(raw_marc: string) {
+  return mrcToObject(raw_marc)
 }
